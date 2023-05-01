@@ -1,4 +1,4 @@
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,7 +37,7 @@ public class PlayerMovementController : MonoBehaviour
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
 
-        this.gameObject.transform.GetChild(0).position -= new Vector3(0f, RideHeight - (RideHeight - 0.6f), 0f);
+        this.gameObject.transform.GetChild(1).position -= new Vector3(0f, RideHeight - (RideHeight - 0.75f), 0f);
                 
     }
 
