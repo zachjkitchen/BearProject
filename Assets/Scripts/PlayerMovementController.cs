@@ -10,9 +10,9 @@ public class PlayerMovementController : MonoBehaviour
     public Rigidbody rb;
     public Transform cam;
 
-    public float speed = 5000f;
+    public float speed = 9000f;
     public float RideHeight = 1f;
-    public float RideSpringStrength = 100f;
+    public float RideSpringStrength = 500f;
     public float RideSpringDamper = 3f;
     public float JumpForce = 5000f;
 
