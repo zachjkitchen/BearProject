@@ -15,12 +15,18 @@ public class PlayerMovementController : MonoBehaviour
     public float RideSpringStrength = 500f;
     public float RideSpringDamper = 3f;
     public float JumpForce = 5000f;
+    public float _uprightJointSpringDamper = 1;
+    public float _uprightJointSpringStrength = 10;
+
+
 
     bool canJump = true;
     public float turnSmoothTime = 0.25f;
     float turnSmoothVel;
     float desiredVel;
+    bool characterUpright;
     float fallingthreshold = -3f;
+    public Quaternion _uprightJointTargetRot = new Quaternion(0f, 0f, 0f, 1f);
 
     Vector3 moveDir = Vector3.zero;
 
@@ -38,7 +44,8 @@ public class PlayerMovementController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         this.gameObject.transform.GetChild(1).position -= new Vector3(0f, RideHeight - (RideHeight - 0.75f), 0f);
-                
+        // this.gameObject.transform.GetChild(1).position -= new Vector3(0f, RideHeight - (RideHeight - 0f), 0f);
+
     }
 
     // Update is called once per frame
@@ -56,6 +63,8 @@ public class PlayerMovementController : MonoBehaviour
 
             Vector3 otherVel = Vector3.zero;
             Rigidbody hitBody = hit.rigidbody;
+
+            
 
 
             
@@ -95,6 +104,8 @@ public class PlayerMovementController : MonoBehaviour
         Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
         
 
+        
+
         animator.SetFloat("speed", direction.magnitude);
 
 
@@ -102,9 +113,10 @@ public class PlayerMovementController : MonoBehaviour
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVel, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            rb.rotation = Quaternion.Euler(0f, angle, 0f);
             moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             desiredVel = speed;
+            
         }
         else
         {
@@ -125,7 +137,7 @@ public class PlayerMovementController : MonoBehaviour
         }
 
 
-        Debug.Log(springRayDidHit);
+        // Debug.Log(springRayDidHit);
 
         animator.SetBool("isLanding", false);
 
@@ -148,20 +160,42 @@ public class PlayerMovementController : MonoBehaviour
 
 
 
-
-
     }
 
+
+   
 
     void FixedUpdate()
     {
 
         if (moveDir.magnitude >= 0.1f)
+            
         {
             rb.AddForce(moveDir.normalized * desiredVel * Time.fixedDeltaTime);
         }
 
-        
+
+        Quaternion characterCurrent = transform.rotation;
+        _uprightJointTargetRot = Quaternion.LookRotation(moveDir);
+
+
+        // calculate shortest rotation between desired rot and current rot
+        Quaternion toGoal = ShortestRotation(_uprightJointTargetRot, characterCurrent);
+        // Quaternion toGoal = new Quaternion(1f, 0f, 0f, 0f);
+        Vector3 rotAxis;
+        float rotDegrees;
+
+
+        toGoal.ToAngleAxis(out rotDegrees, out rotAxis);
+        rotAxis.Normalize();
+        float rotRadians = rotDegrees * Mathf.Deg2Rad;
+
+
+        rb.AddTorque((rotAxis * (rotRadians * _uprightJointSpringStrength)) - (rb.angularVelocity * _uprightJointSpringDamper));
+
+
+
+        Debug.Log(rotRadians);
 
         rb.velocity *= 0.95f;
 
@@ -169,7 +203,32 @@ public class PlayerMovementController : MonoBehaviour
     }
 
 
-    
+    public static Quaternion ShortestRotation(Quaternion a, Quaternion b)
+
+    {
+
+        if (Quaternion.Dot(a, b) < 0)
+
+        {
+
+            return a * Quaternion.Inverse(Multiply(b, -1));
+
+        }
+
+        else return a * Quaternion.Inverse(b);
+
+    }
+
+
+
+    public static Quaternion Multiply(Quaternion input, float scalar)
+
+    {
+
+        return new Quaternion(input.x * scalar, input.y * scalar, input.z * scalar, input.w * scalar);
+
+    }
+
 
 
 }
