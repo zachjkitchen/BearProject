@@ -195,7 +195,7 @@ public class PlayerMovementController : MonoBehaviour
 
 
 
-        Debug.Log(rotRadians);
+        // Debug.Log(rotRadians);
 
         rb.velocity *= 0.95f;
 
