@@ -25,7 +25,10 @@ public class ProjectileSpawn : MonoBehaviour
         if (fireRateCounter == 0)
         {
             GameObject firedProjectileObj = Instantiate(projectile, transform.position, transform.rotation);
-            firedProjectileObj.GetComponent<Rigidbody>().AddForce(transform.forward * projectileForce);
+            Rigidbody projectileRB = firedProjectileObj.GetComponent<Rigidbody>();
+            projectileRB.AddForce(transform.forward * projectileForce);
+            projectileRB.AddTorque(transform.right * Random.Range(-50f, 50f));
+            projectileRB.AddTorque(transform.up * Random.Range(-50f, 50f));
             Destroy(firedProjectileObj, 2);
             fireRateCounter = fireRateSeconds;
         }
