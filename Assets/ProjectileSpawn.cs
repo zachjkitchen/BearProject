@@ -21,7 +21,7 @@ public class ProjectileSpawn : MonoBehaviour
     {
         fireRateCounter -= 1;
 
-        Debug.Log(fireRateCounter);
+        // Debug.Log(fireRateCounter);
         if (fireRateCounter == 0)
         {
             GameObject firedProjectileObj = Instantiate(projectile, transform.position, transform.rotation);

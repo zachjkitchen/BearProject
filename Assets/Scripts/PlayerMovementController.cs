@@ -1,4 +1,4 @@
- using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,35 +10,37 @@ public class PlayerMovementController : MonoBehaviour
     public Rigidbody rb;
     public Transform cam;
 
-    public float speed = 9000f;
+    public float speed = 180f;
+    public float turnSmoothTime = 0.25f;
     public float RideHeight = 1f;
     public float RideSpringStrength = 500f;
     public float RideSpringDamper = 3f;
+    public float getUpStrength = 1f;
+    public float uprightDrag = 0.05f;
+    public float flippedDrag = 100;
     public float JumpForce = 5000f;
     public float _uprightJointSpringDamper = 1;
-    public float _uprightJointSpringStrength = 10;
+    public float _uprightJointSpringStrength = 30;
 
 
 
     bool canJump = true;
-    public float turnSmoothTime = 0.25f;
     float turnSmoothVel;
     float desiredVel;
-    bool characterUpright;
+    bool isUpright;
     float fallingthreshold = -3f;
-    public Quaternion _uprightJointTargetRot = new Quaternion(0f, 0f, 0f, 1f);
+    Quaternion _uprightJointTargetRot;
+
+
 
     Vector3 moveDir = Vector3.zero;
-
-
+    Quaternion characterCurrent;
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-
-        // StartCoroutine(WaitForSeconds);
 
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
@@ -48,26 +50,121 @@ public class PlayerMovementController : MonoBehaviour
 
     }
 
+
+
     // Update is called once per frame
     void Update()
+    {
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
+
+
+
+        animator.SetFloat("speed", direction.magnitude);
+
+
+
+        if (direction.magnitude >= 0.1f)
+        {
+            float current_x = transform.eulerAngles.x;
+            float current_z = transform.eulerAngles.z;
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVel, turnSmoothTime);
+            rb.rotation = Quaternion.Euler(current_x, angle, current_z);
+            moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            desiredVel = speed;
+        }
+        else
+        {
+            desiredVel = 0;
+        }
+        
+
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (canJump)
+            {
+                canJump = false;
+                rb.AddForce(new Vector3(0f, JumpForce, 0f));
+                animator.SetBool("isRising", true);
+            }
+        }
+
+
+        
+    }
+
+
+   
+
+    void FixedUpdate()
+    {
+
+        // Debug.Log(isUpright);
+
+        if (moveDir.magnitude >= 0.1f)
+        {
+            _uprightJointTargetRot = Quaternion.LookRotation(moveDir);
+            rb.AddForce(moveDir.normalized * desiredVel);
+        }
+        //else if (moveDir.magnitude >= 0.1f && !isUpright)
+        //{
+        //    transform.Rotate(0f, 0f, moveDir.z * 100f);
+        //}
+
+
+
+        bool springRayDidHit = UpdateRideSpringForce();
+        UpdateUprightSpringForce();
+
+        
+
+        if (rb.velocity.y < fallingthreshold)
+        {
+            animator.SetBool("isRising", false);
+            animator.SetBool("isFalling", true);
+            canJump = false;
+        }
+        animator.SetBool("isLanding", springRayDidHit);
+
+
+        
+
+        if (characterCurrent.eulerAngles.z > 20 && characterCurrent.eulerAngles.z < 340)
+        {
+            isUpright = true;
+        }
+        else isUpright = false;
+
+        // Debug.Log(characterCurrent.eulerAngles.z);
+        Debug.Log(isUpright);
+
+
+        rb.velocity *= 0.95f;
+    }
+
+    public bool UpdateRideSpringForce()
     {
         RaycastHit hit;
         Ray springRay = new Ray(transform.position, Vector3.down);
         bool springRayDidHit = Physics.Raycast(springRay, out hit, RideHeight);
-        
 
+        // Debug.Log(springRayDidHit);
         if (springRayDidHit)
         {
             Vector3 vel = rb.velocity;
             Vector3 rayDir = transform.TransformDirection(Vector3.down);
-
             Vector3 otherVel = Vector3.zero;
             Rigidbody hitBody = hit.rigidbody;
 
-            
-
 
             
+            animator.SetBool("isFalling", false);
+            canJump = true;
+
+
 
             if (hitBody != null)
             {
@@ -83,107 +180,38 @@ public class PlayerMovementController : MonoBehaviour
 
             float springForce = (x * RideSpringStrength) - (relVel * RideSpringDamper);
 
-     
+
             Debug.DrawLine(transform.position, transform.position + (rayDir * springForce), Color.red);
             Debug.DrawLine(transform.position, transform.position + rayDir, Color.red);
+            // Debug.Log(rayDir * springForce);
 
             rb.AddForce(rayDir * springForce);
 
 
             if (hitBody != null)
             {
-                hitBody.AddForceAtPosition(rayDir * -springForce, hit.point);
+                hitBody.AddForceAtPosition(rayDir * -springForce * 2f, hit.point);
             }
 
+
         }
 
-
-
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
-        
-
-        
-
-        animator.SetFloat("speed", direction.magnitude);
-
-
-        if (direction.magnitude >= 0.1f)
-        {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVel, turnSmoothTime);
-            rb.rotation = Quaternion.Euler(0f, angle, 0f);
-            moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            desiredVel = speed;
-            
-        }
-        else
-        {
-            desiredVel = 0;
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (canJump)
-            {
-                canJump = false;
-                rb.AddForce(new Vector3(0f, JumpForce, 0f));
-                animator.SetBool("isRising", true);
-                
-            }
-            
-        }
-
-
-        // Debug.Log(springRayDidHit);
-
-        animator.SetBool("isLanding", false);
-
-
-
-        if (rb.velocity.y < fallingthreshold)
-        {
-            animator.SetBool("isRising", false);
-            animator.SetBool("isFalling", true);
-            canJump = false;
-        }
-
-        if (springRayDidHit)
-        {
-            animator.SetBool("isFalling", false);
-            animator.SetBool("isLanding", true);
-            canJump = true;
-        }
-
-
-
-
+        return springRayDidHit;
     }
 
 
-   
-
-    void FixedUpdate()
+    public void UpdateUprightSpringForce()
     {
+        // cache current transform rotation
+        characterCurrent = transform.rotation;
 
-        if (moveDir.magnitude >= 0.1f)
-            
-        {
-            rb.AddForce(moveDir.normalized * desiredVel * Time.fixedDeltaTime);
-        }
-
-
-        Quaternion characterCurrent = transform.rotation;
-        _uprightJointTargetRot = Quaternion.LookRotation(moveDir);
 
 
         // calculate shortest rotation between desired rot and current rot
         Quaternion toGoal = ShortestRotation(_uprightJointTargetRot, characterCurrent);
-        // Quaternion toGoal = new Quaternion(1f, 0f, 0f, 0f);
         Vector3 rotAxis;
         float rotDegrees;
+
 
 
         toGoal.ToAngleAxis(out rotDegrees, out rotAxis);
@@ -191,15 +219,14 @@ public class PlayerMovementController : MonoBehaviour
         float rotRadians = rotDegrees * Mathf.Deg2Rad;
 
 
+
         rb.AddTorque((rotAxis * (rotRadians * _uprightJointSpringStrength)) - (rb.angularVelocity * _uprightJointSpringDamper));
+    }
 
 
-
-        // Debug.Log(rotRadians);
-
-        rb.velocity *= 0.95f;
-
-        
+    public void RollForward()
+    {
+        rb.AddTorque(new Vector3(300f, 0f, 0f));
     }
 
 
