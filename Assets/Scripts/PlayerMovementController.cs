@@ -139,7 +139,7 @@ public class PlayerMovementController : MonoBehaviour
         else isUpright = false;
 
         // Debug.Log(characterCurrent.eulerAngles.z);
-        Debug.Log(isUpright);
+        // Debug.Log(isUpright);
 
 
         rb.velocity *= 0.95f;
