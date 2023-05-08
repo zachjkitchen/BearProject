@@ -132,12 +132,6 @@ public class PlayerMovementController : MonoBehaviour
 
         
 
-        if (characterCurrent.eulerAngles.z > 20 && characterCurrent.eulerAngles.z < 340)
-        {
-            isUpright = true;
-        }
-        else isUpright = false;
-
         // Debug.Log(characterCurrent.eulerAngles.z);
         // Debug.Log(isUpright);
 
@@ -224,12 +218,6 @@ public class PlayerMovementController : MonoBehaviour
     }
 
 
-    public void RollForward()
-    {
-        rb.AddTorque(new Vector3(300f, 0f, 0f));
-    }
-
-
     public static Quaternion ShortestRotation(Quaternion a, Quaternion b)
 
     {
@@ -245,7 +233,6 @@ public class PlayerMovementController : MonoBehaviour
         else return a * Quaternion.Inverse(b);
 
     }
-
 
 
     public static Quaternion Multiply(Quaternion input, float scalar)
