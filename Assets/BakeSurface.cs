@@ -14,10 +14,13 @@ public class BakeSurface : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
+        // Cursor.lockState = CursorLockMode.Locked;
         _surface = GetComponent<NavMeshSurface>();
-        
+
+        Debug.Log("HIT DEBUG");
+        Debug.Log(_surface.navMeshData);
+
         Invoke("Bake", 1);
 
         
@@ -25,7 +28,9 @@ public class BakeSurface : MonoBehaviour
 
     void Bake()
     {
-        //_surface.BuildNavMesh();
+        Debug.Log("HIT DEBUG");
+        Debug.Log(_surface.navMeshData);
+        _surface.BuildNavMesh();
     }
 
     
