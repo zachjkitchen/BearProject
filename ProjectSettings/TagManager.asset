@@ -8,12 +8,12 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - ground_y0
   - Water
   - UI
-  - 
-  - 
-  - 
+  - ground_y1
+  - ground_y2
+  - slope
   - 
   - 
   - 

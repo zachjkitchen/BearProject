@@ -8,7 +8,9 @@ public class ProjectileSpawn : MonoBehaviour
 
     public float projectileForce = 400f;
     public int fireRateSeconds = 10;
+    public int projectileMax = 10;
     int fireRateCounter = 50;
+    int projectileCount = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -22,15 +24,16 @@ public class ProjectileSpawn : MonoBehaviour
         fireRateCounter -= 1;
 
         // Debug.Log(fireRateCounter);
-        if (fireRateCounter == 0)
+        if (fireRateCounter == 0 && projectileCount <= projectileMax)
         {
-            GameObject firedProjectileObj = Instantiate(projectile, transform.position, transform.rotation);
+            GameObject firedProjectileObj = Instantiate(projectile, transform.position + new Vector3(0f, 3f, 0f), transform.rotation);
             Rigidbody projectileRB = firedProjectileObj.GetComponent<Rigidbody>();
-            projectileRB.AddForce(transform.forward * projectileForce);
-            projectileRB.AddTorque(transform.right * Random.Range(-50f, 50f));
-            projectileRB.AddTorque(transform.up * Random.Range(-50f, 50f));
-            Destroy(firedProjectileObj, 2);
+            projectileRB.AddForce(new Vector3(Random.Range(-1f, 1f), -1f, Random.Range(-1f, 1f)) * -projectileForce);
+            // projectileRB.AddForce(new Vector3(0f, 0f, 1f) * -projectileForce);
+
+            // Destroy(firedProjectileObj, 2);
             fireRateCounter = fireRateSeconds;
+            projectileCount += 1;
         }
         //shoot block
 

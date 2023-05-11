@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4014975318402339494}
   - component: {fileID: 2651985653463018101}
   - component: {fileID: 7024163810606063415}
+  - component: {fileID: 7301074159189108802}
   m_Layer: 0
   m_Name: Opossum1
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3222592403692761971}
   m_LocalRotation: {x: 0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 38.486008, y: 1.2, z: 16.9}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.22, y: 0.22, z: 0.22}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -92,13 +93,13 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3222592403692761971}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: b8e24440e156c44f697d49c686ed480b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 1.14
-  m_Height: 6.02
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.11, z: -0.51}
+  m_Radius: 2.2
+  m_Height: 0
+  m_Direction: 0
+  m_Center: {x: 0, y: 0, z: -2.4}
 --- !u!114 &7024163810606063415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,3 +112,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e680c41983a457b8e831d6a364bcd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agent: {fileID: 7301074159189108802}
+  opossumProjectile: {fileID: 1577189167286861744, guid: 8d61cda3e217c4cac82aef6c07e074c4,
+    type: 3}
+  opossumJumpForce: 3000
+  opossumForwardForce: 1000
+--- !u!195 &7301074159189108802
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3222592403692761971}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 3.3961616
+  m_Speed: 10
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 1000
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 3.5301325
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
