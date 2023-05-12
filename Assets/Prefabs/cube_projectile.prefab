@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1877189861950756827}
   - component: {fileID: 623224592850589508}
   - component: {fileID: 7650400520596506860}
-  - component: {fileID: 5916150407799849411}
   - component: {fileID: 4618893343890442795}
+  - component: {fileID: 6006436861090445078}
   m_Layer: 0
   m_Name: cube_projectile
   m_TagString: Untagged
@@ -102,19 +102,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!65 &5916150407799849411
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7754948190473776759}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4618893343890442795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,11 +120,24 @@ MonoBehaviour:
   property: propertyBlock[0]._BaseColor.Color
   relative: 0
   relativeParent: 0
-  hueMin: -0.77
-  hueMax: 1.46
+  hueMin: -0.41
+  hueMax: 0.01
   saturationMin: 1.78
   saturationMax: 2.07
   valueMin: 0.35
   valueMax: 2.86
   alphaMin: 1
   alphaMax: 3.12
+--- !u!135 &6006436861090445078
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7754948190473776759}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9
+  m_Center: {x: 0, y: 0, z: 0}
